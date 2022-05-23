@@ -13,9 +13,9 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/exit-feedback", async (req, res) => {
-    const { body } = req;
     try {
-        res.json({ message: "Feedback stored successfully" });
+        const exitFeedbackData = await ExitFeedbakModel.find();
+        res.json({ count: exitFeedbackData.length, exitFeedbackData });
     } catch (err) {
         res.json({ message: "Failed to store feedback" });
     }
