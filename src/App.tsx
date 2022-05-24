@@ -78,7 +78,14 @@ function App() {
     };
 
     return (
-        <Card sx={{ minWidth: 500, maxWidth: 1080, margin: "2rem auto" }}>
+        <Card
+            sx={{
+                minWidth: 500,
+                maxWidth: 1080,
+                margin: "2rem auto",
+                overflow: "scroll",
+            }}
+        >
             <CardContent>
                 <Typography
                     sx={{ fontSize: 14 }}
