@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from "react";
-import logo from "./logo.svg";
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import Badge from "@mui/material/Badge";
 import "./App.css";
+import Table from "./components/Table";
 
-type ExitFeedbackData = {
+export type ExitFeedbackData = {
     po1: { id: number; title: string; question: string; rating: string };
     po2: { id: number; title: string; question: string; rating: string };
     po3: { id: number; title: string; question: string; rating: string };
@@ -44,24 +51,70 @@ type ExitFeedback = {
 };
 
 function App() {
-    const [exitFeedback, setExitFeedbackData] = useState<ExitFeedback>();
+    const [exitFeedbackCount, setExitFeedbackCount] = useState<number>(0);
+    const [exitFeedbackData, setExitFeedbackData] =
+        useState<ExitFeedbackData[]>();
+    const [exitFeedbackButtonHover, setExitFeedbackButtonHover] =
+        useState(false);
 
     useEffect(() => {
         fetch("http://localhost:3010/exit-feedback")
             .then((res) => res.json())
             .then((data: ExitFeedback) => {
-                setExitFeedbackData(data);
+                setExitFeedbackCount(data.count);
+                setExitFeedbackData(data.exitFeedbackData);
             });
     }, []);
+
+    const handleExitFeedbackHover = () => {
+        setExitFeedbackButtonHover(true);
+    };
+    const handleExitFeedbackLeave = () => {
+        setExitFeedbackButtonHover(false);
+    };
+
+    const handleExitFeedbackDownload = () => {
+        console.log("Clicked");
+    };
+
     return (
-        <div>
-            <ul>
-                <li>{exitFeedback?.count}</li>
-                {exitFeedback?.exitFeedbackData.map((data, index) => (
-                    <li key={index}></li>
-                ))}
-            </ul>
-        </div>
+        <Card sx={{ minWidth: 500, maxWidth: 1080, margin: "2rem auto" }}>
+            <CardContent>
+                <Typography
+                    sx={{ fontSize: 14 }}
+                    color="text.secondary"
+                    gutterBottom
+                >
+                    <Badge
+                        badgeContent={
+                            exitFeedbackButtonHover ? null : exitFeedbackCount
+                        }
+                        color="error"
+                    >
+                        <Button
+                            variant="contained"
+                            onMouseEnter={handleExitFeedbackHover}
+                            onMouseLeave={handleExitFeedbackLeave}
+                            onClick={handleExitFeedbackDownload}
+                            sx={{ minWidth: 350 }}
+                            color={exitFeedbackButtonHover ? "primary" : "info"}
+                        >
+                            {exitFeedbackButtonHover
+                                ? "Download Exit Feedback Response"
+                                : "Total Exit Feedback Response"}
+                        </Button>
+                    </Badge>
+                </Typography>
+                <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                    Exit Feedback Response
+                </Typography>
+                <Box>
+                    {exitFeedbackData && (
+                        <Table feedbackData={exitFeedbackData} />
+                    )}
+                </Box>
+            </CardContent>
+        </Card>
     );
 }
 
